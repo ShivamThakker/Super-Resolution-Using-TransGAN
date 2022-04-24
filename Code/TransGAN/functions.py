@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-# @Date    : 2019-07-25
-# @Author  : Xinyu Gong (xy_gong@tamu.edu)
-# @Link    : None
-# @Version : 0.0
+
 
 import logging
 import operator
@@ -24,21 +20,7 @@ from utils.torch_fid_score import get_fid
 logger = logging.getLogger(__name__)
 
 def cur_stages(iter, args):
-        """
-        Return current stage.
-        :param epoch: current epoch.
-        :return: current stage
-        """
-        # if search_iter < self.grow_step1:
-        #     return 0
-        # elif self.grow_step1 <= search_iter < self.grow_step2:
-        #     return 1
-        # else:
-        #     return 2
-        # for idx, grow_step in enumerate(args.grow_steps):
-        #     if iter < grow_step:
-        #         return idx
-        # return len(args.grow_steps)
+        
         idx = 0
         for i in range(len(args.grow_steps)):
             if iter >= args.grow_steps[i]:
@@ -46,7 +28,6 @@ def cur_stages(iter, args):
         return idx
 
 def compute_gradient_penalty(D, real_samples, fake_samples, phi):
-    """Calculates the gradient penalty loss for WGAN GP"""
     # Random weight term for interpolation between real and fake samples
     alpha = torch.Tensor(np.random.random((real_samples.size(0), 1, 1, 1))).to(real_samples.get_device())
     # Get random interpolation between real and fake samples
@@ -87,9 +68,9 @@ def train(args, gen_net: nn.Module, dis_net: nn.Module, gen_optimizer, dis_optim
         # Sample noise as generator input
         z = torch.cuda.FloatTensor(np.random.normal(0, 1, (imgs.shape[0], args.latent_dim))).cuda(args.gpu, non_blocking=True)
 
-        # ---------------------
+       
         #  Train Discriminator
-        # ---------------------
+       
         
 
         real_validity = dis_net(real_imgs)
@@ -150,9 +131,7 @@ def train(args, gen_net: nn.Module, dis_net: nn.Module, gen_optimizer, dis_optim
 
             writer.add_scalar('d_loss', d_loss.item(), global_steps) if args.rank == 0 else 0
 
-        # -----------------
         #  Train Generator
-        # -----------------
         if global_steps % (args.n_critic * args.accumulated_times) == 0:
             
             for accumulated_idx in range(args.g_accumulated_times):
@@ -174,7 +153,7 @@ def train(args, gen_net: nn.Module, dis_net: nn.Module, gen_optimizer, dis_optim
                             g_loss += nn.MSELoss()(fake_validity_item, real_label)
                     else:
                         real_label = torch.full((fake_validity.shape[0],fake_validity.shape[1]), 1., dtype=torch.float, device=real_imgs.get_device())
-                        # fake_validity = nn.Sigmoid()(fake_validity.view(-1))
+                        
                         g_loss = nn.MSELoss()(fake_validity, real_label)
                 elif args.loss == 'wgangp-mode':
                     fake_image1, fake_image2 = gen_imgs[:args.gen_batch_size//2], gen_imgs[args.gen_batch_size//2:]
@@ -223,11 +202,6 @@ def train(args, gen_net: nn.Module, dis_net: nn.Module, gen_optimizer, dis_optim
         # verbose
         if gen_step and iter_idx % args.print_freq == 0 and args.rank == 0:
             sample_imgs = torch.cat((gen_imgs[:16], real_imgs[:16]), dim=0)
-#             scale_factor = args.img_size // int(sample_imgs.size(3))
-#             sample_imgs = torch.nn.functional.interpolate(sample_imgs, scale_factor=2)
-#             img_grid = make_grid(sample_imgs, nrow=4, normalize=True, scale_each=True)
-#             save_image(sample_imgs, f'sampled_images_{args.exp_name}.jpg', nrow=4, normalize=True, scale_each=True)
-            # writer.add_image(f'sampled_images_{args.exp_name}', img_grid, global_steps)
             tqdm.write(
                 "[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f] [ema: %f] " %
                 (epoch, args.max_epoch, iter_idx % len(train_loader), len(train_loader), d_loss.item(), g_loss.item(), ema_beta))
@@ -245,14 +219,7 @@ def train(args, gen_net: nn.Module, dis_net: nn.Module, gen_optimizer, dis_optim
 
 
 def get_is(args, gen_net: nn.Module, num_img):
-    """
-    Get inception score.
-    :param args:
-    :param gen_net:
-    :param num_img:
-    :return: Inception score
-    """
-
+    
     # eval mode
     gen_net = gen_net.eval()
 
@@ -280,28 +247,7 @@ def validate(args, fixed_z, fid_stat, epoch, gen_net: nn.Module, writer_dict, cl
     # eval mode
     gen_net.eval()
 
-#     generate images
-#     with torch.no_grad():
-#         sample_imgs = gen_net(fixed_z, epoch)
-#     img_grid = make_grid(sample_imgs, nrow=5, normalize=True, scale_each=True)
-
-#     get fid and inception score
-#     if args.gpu == 0:
-#         fid_buffer_dir = os.path.join(args.path_helper['sample_path'], 'fid_buffer')
-#         os.makedirs(fid_buffer_dir, exist_ok=True) if args.gpu == 0 else 0
-
-#     eval_iter = args.num_eval_imgs // args.eval_batch_size
-#     img_list = list()
-#     for iter_idx in tqdm(range(eval_iter), desc='sample images'):
-#         z = torch.cuda.FloatTensor(np.random.normal(0, 1, (args.eval_batch_size, args.latent_dim)))
-    
-#         # Generate a batch of images
-#         gen_imgs = gen_net(z, epoch).mul_(127.5).add_(127.5).clamp_(0.0, 255.0).permute(0, 2, 3, 1).to('cpu',
-#                                                                                                 torch.uint8).numpy()
-#         for img_idx, img in enumerate(gen_imgs):
-#             file_name = os.path.join(fid_buffer_dir, f'iter{iter_idx}_b{img_idx}.png')
-#             imsave(file_name, img)
-#         img_list.extend(list(gen_imgs))
+#     
 
 #     get inception score
     logger.info('=> calculate inception score') if args.rank == 0 else 0
@@ -311,7 +257,7 @@ def validate(args, fixed_z, fid_stat, epoch, gen_net: nn.Module, writer_dict, cl
     else:
         mean, std = 0, 0
     print(f"Inception score: {mean}") if args.rank == 0 else 0
-#     mean, std = 0, 0
+
     # get fid score
     print('=> calculate fid score') if args.rank == 0 else 0
     if args.rank == 0:
@@ -321,13 +267,6 @@ def validate(args, fixed_z, fid_stat, epoch, gen_net: nn.Module, writer_dict, cl
     # fid_score = 10000
     print(f"FID score: {fid_score}") if args.rank == 0 else 0
     
-#     if args.gpu == 0:
-#         if clean_dir:
-#             os.system('rm -r {}'.format(fid_buffer_dir))
-#         else:
-#             logger.info(f'=> sampled images are saved to {fid_buffer_dir}')
-
-#     writer.add_image('sampled_images', img_grid, global_steps)
     if args.rank == 0:
         writer.add_scalar('Inception_score/mean', mean, global_steps)
         writer.add_scalar('Inception_score/std', std, global_steps)
@@ -356,15 +295,7 @@ def save_samples(args, fixed_z, fid_stat, epoch, gen_net: nn.Module, writer_dict
 
 
 def get_topk_arch_hidden(args, controller, gen_net, prev_archs, prev_hiddens):
-    """
-    ~
-    :param args:
-    :param controller:
-    :param gen_net:
-    :param prev_archs: previous architecture
-    :param prev_hiddens: previous hidden vector
-    :return: a list of topk archs and hiddens.
-    """
+    
     logger.info(f'=> get top{args.topk} archs out of {args.num_candidate} candidate archs...')
     assert args.num_candidate >= args.topk
     controller.eval()
