@@ -8,7 +8,7 @@ First download the [cifar checkpoint](https://drive.google.com/drive/folders/1UE
 python exp/cifar_test.py
 ```
 
-## Main Pipeline
+## Generator and Discriminator model based on Transformer
 ![Main Pipeline](assets/TransGAN_1.png)
 
 ## Representative Visual Results
