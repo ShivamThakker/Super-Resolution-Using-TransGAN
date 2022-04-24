@@ -1,8 +1,3 @@
-# -*- coding: utf-8 -*-
-# @Date    : 10/6/19
-# @Author  : Xinyu Gong (xy_gong@tamu.edu)
-# @Link    : None
-# @Version : 0.0
 
 from functools import partial
 import torch
@@ -16,13 +11,9 @@ import glob
 
 
 class CelebA(Dataset):
-    """ pyTorch Dataset wrapper for the generic flat directory images dataset """
-
+    
     def __setup_files(self):
-        """
-        private helper for setting up the files_list
-        :return: files => list of paths of files
-        """
+       
         file_names = os.listdir(self.data_dir)
         files = []  # initialize to empty list
 
@@ -35,12 +26,7 @@ class CelebA(Dataset):
         return files
 
     def __init__(self, root, transform=None):
-        """
-        constructor for the class
-        :param data_dir: path to the directory containing the data
-        :param transform: transforms to be applied to the images
-        """
-        # define the state of the object
+        
         self.data_dir = root
         self.transform = transform
 
@@ -48,18 +34,11 @@ class CelebA(Dataset):
         self.files = self.__setup_files()
 
     def __len__(self):
-        """
-        compute the length of the dataset
-        :return: len => length of dataset
-        """
+       
         return len(self.files)
 
     def __getitem__(self, idx):
-        """
-        obtain the image (read and transform)
-        :param idx: index of the file required
-        :return: img => image array
-        """
+       
         from PIL import Image
 
         # read the image:
@@ -79,13 +58,9 @@ class CelebA(Dataset):
     
     
 class FFHQ(Dataset):
-    """ pyTorch Dataset wrapper for the generic flat directory images dataset """
-
+   
     def __setup_files(self):
-        """
-        private helper for setting up the files_list
-        :return: files => list of paths of files
-        """
+        
         file_names = glob.glob(os.path.join(self.data_dir, "./*/*.png")) + \
                      glob.glob(os.path.join(self.data_dir, "./*.jpg")) + \
                     [y for x in os.walk(self.data_dir) for y in glob.glob(os.path.join(x[0], "*.webp"))]
@@ -100,11 +75,7 @@ class FFHQ(Dataset):
         return files
 
     def __init__(self, root, transform=None):
-        """
-        constructor for the class
-        :param data_dir: path to the directory containing the data
-        :param transform: transforms to be applied to the images
-        """
+       
         # define the state of the object
         self.data_dir = root
         self.transform = transform
@@ -113,18 +84,11 @@ class FFHQ(Dataset):
         self.files = self.__setup_files()
 
     def __len__(self):
-        """
-        compute the length of the dataset
-        :return: len => length of dataset
-        """
+       
         return len(self.files)
 
     def __getitem__(self, idx):
-        """
-        obtain the image (read and transform)
-        :param idx: index of the file required
-        :return: img => image array
-        """
+        
         from PIL import Image
 
         # read the image:
