@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-# @Date    : 2019-10-01
-# @Author  : Xinyu Gong (xy_gong@tamu.edu)
-# @Link    : None
-# @Version : 0.0
+
 
 from __future__ import absolute_import
 from __future__ import division
@@ -40,12 +36,7 @@ def main():
     torch.backends.cudnn.deterministic = True
 
 
-    # set tf env
-    # _init_inception()
-    # inception_path = check_or_download_inception(None)
-    # create_inception_graph(inception_path)
-
-    # # import network
+   
     gen_net = eval('models_search.'+args.gen_model+'.Generator')(args=args).cuda()
     dis_net = eval('models_search.'+args.dis_model+'.Discriminator')(args=args).cuda()
     gen_net.set_arch(args.arch, cur_stage=2)
