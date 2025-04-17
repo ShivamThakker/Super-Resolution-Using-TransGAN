@@ -1,4 +1,4 @@
-# CSE541-Computer-Vision-2022-The-Office
+# Super Resolution using TransGAN
 
 Super Pixel
 
